@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CV Studio v6</title>
+<title>CV Studio v7</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -731,13 +731,93 @@ select{cursor:pointer}
 .lang-wrap{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:2px}
 .lang-btn{font-family:'JetBrains Mono',monospace;font-size:8px;padding:3px 6px;border-radius:3px;cursor:pointer;border:none;background:transparent;color:var(--txt3);transition:all .15s}
 .lang-btn.on{background:var(--accent);color:#0F172A;font-weight:700}
+
+/* ════════ MULTIPAGE ════════ */
+#cv-doc{
+  min-height:unset!important;
+  height:auto!important;
+}
+.cv-page{
+  width:794px;min-height:1123px;background:var(--cv-bg,#fff);
+  display:flex;flex-direction:column;position:relative;
+  page-break-after:always;break-after:page;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.cv-page:last-child{page-break-after:auto;break-after:auto;min-height:unset;}
+.cv-page-sep{
+  width:794px;height:28px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;flex-shrink:0;margin:0;
+  background:transparent;user-select:none;
+}
+.cv-page-sep-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.4),transparent)}
+.cv-page-sep-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(99,102,241,.5);
+  padding:0 8px;white-space:nowrap;letter-spacing:.06em;}
+#cv-doc-wrap{display:flex;flex-direction:column;align-items:center;gap:0}
+.page-count-badge{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--txt3);
+  background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:2px 6px;white-space:nowrap}
+@media print{
+  #cv-doc-wrap{gap:0}
+  .cv-page-sep{display:none!important}
+  .topbar,.editor,.layouts-rail,.preview-meta{display:none!important}
+  .app{height:auto}.center{height:auto}
+  .preview-zone{padding:0;background:white!important;overflow:visible!important}
+  .cv-page{box-shadow:none;width:210mm!important;}
+}
+
+/* ════════ DRAG & DROP SECTIONS ════════ */
+.draggable-block{cursor:grab;position:relative;transition:opacity .15s,transform .15s}
+.draggable-block:active{cursor:grabbing}
+.draggable-block.dragging{opacity:.4;transform:scale(.98)}
+.draggable-block.drag-over{border-top:2px solid var(--accent)!important;border-radius:0}
+.drag-handle{position:absolute;left:-14px;top:50%;transform:translateY(-50%);
+  color:var(--txt4);font-size:10px;cursor:grab;opacity:0;transition:opacity .15s;
+  display:flex;flex-direction:column;gap:1px;padding:2px}
+.draggable-block:hover .drag-handle{opacity:1}
+.drag-handle span{display:block;width:10px;height:1.5px;background:var(--txt3);border-radius:1px}
+
+/* ════════ LAYOUT SEARCH / FILTER ════════ */
+.rail-search{
+  position:sticky;top:0;z-index:10;background:var(--rail-bg);
+  padding:4px 0 6px;margin-bottom:2px;
+}
+.rail-search-inp{
+  width:100%;background:var(--input-bg);border:1px solid var(--input-border);
+  border-radius:3px;color:var(--txt);font-family:'JetBrains Mono',monospace;
+  font-size:9px;padding:4px 6px;outline:none;transition:border-color .15s;
+}
+.rail-search-inp:focus{border-color:var(--accent)}
+.rail-group-filters{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}
+.rail-gf-btn{font-family:'JetBrains Mono',monospace;font-size:7px;padding:2px 4px;
+  border-radius:2px;cursor:pointer;border:1px solid var(--border2);
+  background:transparent;color:var(--txt4);transition:all .12s;white-space:nowrap}
+.rail-gf-btn:hover{border-color:var(--txt3);color:var(--txt3)}
+.rail-gf-btn.on{background:var(--accent);color:#0F172A;border-color:var(--accent);font-weight:700}
+.layout-card.hidden{display:none}
+.rail-group-hdr{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt4);
+  text-transform:uppercase;letter-spacing:.08em;padding:4px 2px 2px;
+  border-top:1px solid var(--border2);margin-top:2px}
+.rail-group-hdr.hidden{display:none}
+
+/* ════════ FOCUS MODE ════════ */
+body.focus-mode .editor{display:none!important}
+body.focus-mode .layouts-rail{display:none!important}
+body.focus-mode .stepper-bar{display:none!important}
+body.focus-mode #preview-zone{padding:16px}
+body.focus-mode .preview-meta{max-width:100%}
+body.focus-mode #cv-doc-wrap{align-items:center}
+.focus-btn{background:transparent;color:var(--txt3);border:1px solid var(--border);
+  width:26px;height:26px;border-radius:4px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:12px;transition:all .15s;padding:0}
+.focus-btn:hover,.focus-btn.on{background:var(--surface2);color:var(--accent);border-color:var(--accent)}
+
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
     <div class="brand-dot"></div>
-    <span class="brand-name"><span>cv</span>.studio<span class="brand-ver">v6</span></span>
+    <span class="brand-name"><span>cv</span>.studio<span class="brand-ver">v7</span></span>
   </div>
   <div class="tsep"></div>
   <div class="comp-pill" title="Complétude du CV">
@@ -775,6 +855,8 @@ select{cursor:pointer}
   <!-- MARGIN GUIDE -->
   <button class="margin-btn" id="btn-margin" onclick="toggleMargin()" title="Guides de marge">⊡</button>
   <div class="topbar-right">
+    <button class="focus-btn" id="btn-focus" onclick="toggleFocus()" title="Mode focus (plein écran)">⛶</button>
+    <div class="tsep"></div>
     <span class="save-badge" id="save-badge"><span class="save-dot"></span><span id="save-txt">Sauvegardé</span></span>
     <div class="undo-wrap">
       <button class="undo-btn" id="btn-undo" onclick="doUndo()" title="Annuler (Ctrl+Z)" disabled>↩</button>
@@ -815,10 +897,13 @@ select{cursor:pointer}
     <div class="preview-zone" id="preview-zone">
       <div class="preview-meta">
         <span class="preview-tag">// aperçu A4 — temps réel</span>
-        <span class="overflow-badge" id="overflow-badge" title="Le contenu dépasse une page A4">⚠ Dépasse A4</span>
+        <span class="overflow-badge" id="overflow-badge" title="Le contenu dépasse une page A4" style="display:none">⚠ Dépasse A4</span>
+        <span class="page-count-badge" id="page-count-badge">1 page</span>
         <span class="preview-tag" id="profile-display">💻 Développeur</span>
       </div>
-      <div id="cv-doc"></div>
+      <div id="cv-doc-wrap">
+        <div id="cv-doc"></div>
+      </div>
     </div>
   </div>
   <div class="layouts-rail" id="layouts-rail">
@@ -1150,6 +1235,10 @@ const STEPS=[{id:'identity',icon:'👤',label:'Identité'},{id:'content',icon:'�
 ════════════════════════════════════════════════════ */
 let profileId='dev',data={},secs={},photo=null,pal='emerald',layout='terminal',navMode='stepper',step=0,theme='dark',fontSize=13;
 let cvZoom=1,cvDensity=1,densityMode='normal',cvBg='#ffffff',marginVisible=false;
+let focusMode=false;
+let layoutFilter='';let layoutGroupFilter='';
+/* Section render order — can be reordered by drag */
+let sectionOrder=['exps','projs','certs','edu'];
 
 /* ════════════════════════════════════════════════════
    TYPOGRAPHY STATE
@@ -1217,6 +1306,351 @@ function setCvLang(l){
 }
 function getLbl(key){return CV_LANG_LABELS[cvLang]?.[key]||CV_LANG_LABELS.fr[key]||key;}
 
+
+
+/* ════════════════════════════════════════════════════
+   FOCUS MODE
+════════════════════════════════════════════════════ */
+function toggleFocus(){
+  focusMode=!focusMode;
+  document.body.classList.toggle('focus-mode',focusMode);
+  const btn=document.getElementById('btn-focus');
+  if(btn){btn.classList.toggle('on',focusMode);btn.title=focusMode?'Quitter le focus':'Mode focus';}
+  showToast(focusMode?'✓ Mode focus activé — Échap pour quitter':'✓ Mode normal');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&focusMode)toggleFocus();});
+
+/* ════════════════════════════════════════════════════
+   LAYOUT SEARCH & FILTER
+════════════════════════════════════════════════════ */
+function filterLayouts(){
+  const q=(layoutFilter||'').toLowerCase();
+  const g=layoutGroupFilter;
+  let anyGroupVisible={};
+  document.querySelectorAll('.layout-card').forEach(card=>{
+    const name=(card.dataset.name||'').toLowerCase();
+    const grp=(card.dataset.group||'');
+    const matchQ=!q||name.includes(q);
+    const matchG=!g||grp===g;
+    const show=matchQ&&matchG;
+    card.classList.toggle('hidden',!show);
+    if(show)anyGroupVisible[grp]=true;
+  });
+  // Hide empty group headers
+  document.querySelectorAll('.rail-group-hdr').forEach(hdr=>{
+    const grp=hdr.dataset.group;
+    hdr.classList.toggle('hidden',!(anyGroupVisible[grp]));
+  });
+}
+function setLayoutGroupFilter(g){
+  layoutGroupFilter=(layoutGroupFilter===g)?'':g;
+  document.querySelectorAll('.rail-gf-btn').forEach(b=>b.classList.toggle('on',b.dataset.g===layoutGroupFilter));
+  filterLayouts();
+}
+
+/* ════════════════════════════════════════════════════
+   SECTION DRAG & DROP (editor blocks)
+════════════════════════════════════════════════════ */
+let _dragSrc=null,_dragType=null,_dragIdx=null;
+
+function makeDraggable(el,type,idx){
+  el.draggable=true;
+  el.classList.add('draggable-block');
+  // Add handle
+  const h=document.createElement('div');
+  h.className='drag-handle';
+  h.innerHTML='<span></span><span></span><span></span>';
+  el.style.position='relative';
+  el.appendChild(h);
+
+  el.addEventListener('dragstart',e=>{
+    _dragSrc=el;_dragType=type;_dragIdx=idx;
+    e.dataTransfer.effectAllowed='move';
+    e.dataTransfer.setData('text/plain',`${type}:${idx}`);
+    setTimeout(()=>el.classList.add('dragging'),0);
+  });
+  el.addEventListener('dragend',()=>{
+    el.classList.remove('dragging');
+    document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+    _dragSrc=null;
+  });
+  el.addEventListener('dragover',e=>{
+    e.preventDefault();e.dataTransfer.dropEffect='move';
+    if(_dragSrc&&_dragSrc!==el&&_dragType===type){
+      document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    }
+  });
+  el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    if(!_dragSrc||_dragSrc===el||_dragType!==type)return;
+    const fromIdx=_dragIdx;
+    const toIdx=idx;
+    if(fromIdx===toIdx)return;
+    // Reorder array
+    const arr=data[type];
+    const [moved]=arr.splice(fromIdx,1);
+    arr.splice(toIdx,0,moved);
+    data[type]=arr;
+    // Re-render editor list
+    if(type==='exps')renderExps();
+    else if(type==='projs')renderProjs();
+    else if(type==='certs')renderCerts();
+    else if(type==='edu')renderEdu();
+    render();snapshotUndo();
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   SECTION ORDER DRAG & DROP (whole sections in editor)
+════════════════════════════════════════════════════ */
+let _secDragSrc=null,_secDragId=null;
+function makeSecDraggable(el,secId){
+  el.draggable=true;
+  el.addEventListener('dragstart',e=>{
+    _secDragSrc=el;_secDragId=secId;
+    e.dataTransfer.effectAllowed='move';
+    setTimeout(()=>el.classList.add('dragging'),0);
+  });
+  el.addEventListener('dragend',()=>{
+    el.classList.remove('dragging');
+    document.querySelectorAll('.sec-drag-over').forEach(x=>x.classList.remove('sec-drag-over'));
+  });
+  el.addEventListener('dragover',e=>{
+    e.preventDefault();
+    if(_secDragSrc&&_secDragSrc!==el){
+      document.querySelectorAll('.sec-drag-over').forEach(x=>x.classList.remove('sec-drag-over'));
+      el.classList.add('sec-drag-over');
+    }
+  });
+  el.addEventListener('dragleave',()=>el.classList.remove('sec-drag-over'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();el.classList.remove('sec-drag-over');
+    if(!_secDragSrc||_secDragSrc===el)return;
+    const from=sectionOrder.indexOf(_secDragId);
+    const to=sectionOrder.indexOf(secId);
+    if(from<0||to<0)return;
+    const [moved]=sectionOrder.splice(from,1);
+    sectionOrder.splice(to,0,moved);
+    buildNav();render();snapshotUndo();
+    showToast('✓ Section déplacée');
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   MULTIPAGE ENGINE
+════════════════════════════════════════════════════ */
+const A4_H=1123; // px at 96dpi
+
+function wrapIntoPages(cvEl){
+  // After render, measure actual height and inject page separators
+  const wrap=document.getElementById('cv-doc-wrap');
+  if(!wrap)return;
+  // Remove old separators
+  wrap.querySelectorAll('.cv-page-sep').forEach(s=>s.remove());
+
+  const h=cvEl.scrollHeight;
+  const pages=Math.max(1,Math.ceil(h/A4_H));
+
+  // Update page count badge
+  const badge=document.getElementById('page-count-badge');
+  if(badge)badge.textContent=pages===1?'1 page':`${pages} pages`;
+
+  // Inject visual separators between pages
+  wrap.innerHTML='';
+  wrap.appendChild(cvEl);
+
+  if(pages>1){
+    // We inject separator overlays absolutely positioned
+    for(let p=1;p<pages;p++){
+      const sep=document.createElement('div');
+      sep.className='cv-page-sep';
+      sep.style.cssText=`position:absolute;top:${p*A4_H*cvZoom}px;left:50%;transform:translateX(-50%);width:${794*cvZoom}px;z-index:20;pointer-events:none;`;
+      sep.innerHTML=`<div class="cv-page-sep-line"></div><span class="cv-page-sep-lbl">— page ${p} / ${pages} —</span><div class="cv-page-sep-line"></div>`;
+      wrap.style.position='relative';
+      wrap.appendChild(sep);
+    }
+  }
+  // Update overflow badge (only show if > 1 page as info, not warning)
+  const ob=document.getElementById('overflow-badge');
+  if(ob){
+    ob.style.display=pages>1?'flex':'none';
+    ob.textContent=pages>1?`${pages} pages`:'';
+    ob.title=pages>1?`CV sur ${pages} pages — sera imprimé correctement`:'';
+    ob.style.background=pages>1?'rgba(99,102,241,.12)':'';
+    ob.style.color=pages>1?'#818CF8':'';
+    ob.style.borderColor=pages>1?'rgba(99,102,241,.3)':'';
+  }
+}
+
+/* ════════════════════════════════════════════════════
+   REAL WORD EXPORT (via docx.js)
+════════════════════════════════════════════════════ */
+async function exportWord(){
+  if(!window.docx){showToast('⏳ Chargement docx.js…');return;}
+  showToast('⏳ Génération Word…');
+  const {Document,Packer,Paragraph,TextRun,HeadingLevel,AlignmentType,BorderStyle,Table,TableRow,TableCell,WidthType,ShadingType}=window.docx;
+
+  const st=getComputedStyle(document.documentElement);
+  const accentHex=st.getPropertyValue('--accent').trim().replace('#','');
+
+  const hexToRgb=h=>{const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return{r,g,b};};
+  const accent6=accentHex.length===6?accentHex:'10B981';
+  const rgb=hexToRgb(accent6);
+
+  const mkPar=(text,opts={})=>new Paragraph({
+    children:[new TextRun({text,size:(opts.size||22),bold:opts.bold||false,color:opts.color||'1E293B',font:opts.font||'Outfit'})],
+    spacing:{after:opts.after!==undefined?opts.after:100},
+    alignment:opts.align||AlignmentType.LEFT,
+    ...( opts.border?{border:{bottom:{style:BorderStyle.SINGLE,size:6,color:accent6}}}:{})
+  });
+
+  const mkLabel=(text)=>new Paragraph({
+    children:[new TextRun({text:text.toUpperCase(),size:16,bold:true,color:accent6,font:'JetBrains Mono'})],
+    spacing:{before:200,after:80},
+    border:{bottom:{style:BorderStyle.SINGLE,size:4,color:'E2E8F0'}}
+  });
+
+  const children=[];
+
+  // Header
+  children.push(new Paragraph({
+    children:[new TextRun({text:data.name||'',size:52,bold:true,color:'1E293B',font:'Syne'})],
+    spacing:{after:60}
+  }));
+  children.push(new Paragraph({
+    children:[new TextRun({text:(data.job||'').toUpperCase(),size:18,color:accent6,font:'JetBrains Mono'})],
+    spacing:{after:100}
+  }));
+
+  // Contact line
+  const contacts=[data.email,data.phone,data.location,data.linkedin].filter(Boolean);
+  if(contacts.length){
+    children.push(new Paragraph({
+      children:contacts.map((c,i)=>[
+        new TextRun({text:c,size:18,color:'64748B',font:'Outfit'}),
+        i<contacts.length-1?new TextRun({text:'  ·  ',size:18,color:'CBD5E1'}):null
+      ]).flat().filter(Boolean),
+      spacing:{after:200},
+      border:{bottom:{style:BorderStyle.SINGLE,size:6,color:'E2E8F0'}}
+    }));
+  }
+
+  // Profile
+  if((data.profile||'').trim()){
+    children.push(mkLabel(PROFILES[profileId].lbls.profileCv||'Profil'));
+    children.push(mkPar(data.profile||'',{size:20,color:'475569',after:200}));
+  }
+
+  // Experiences
+  if(secs.exps&&(data.exps||[]).length){
+    children.push(mkLabel(PROFILES[profileId].lbls.expCv||'Expérience'));
+    (data.exps||[]).forEach(e=>{
+      children.push(new Paragraph({
+        children:[
+          new TextRun({text:e.role||'',size:22,bold:true,color:'1E293B',font:'Outfit'}),
+          new TextRun({text:'   ',size:22}),
+          new TextRun({text:e.date||'',size:16,color:'94A3B8',font:'JetBrains Mono'})
+        ],spacing:{before:120,after:40}
+      }));
+      children.push(mkPar(e.company||'',{size:17,color:accent6,font:'JetBrains Mono',after:60}));
+      if(e.desc)children.push(mkPar(e.desc,{size:19,color:'64748B',after:160}));
+    });
+  }
+
+  // Skills (as table)
+  if(secs.skills&&(data.skills||[]).length){
+    children.push(mkLabel(PROFILES[profileId].lbls.skills||'Compétences'));
+    const skillRows=[];
+    for(let i=0;i<data.skills.length;i+=2){
+      const cells=[data.skills[i],data.skills[i+1]].map(s=>new TableCell({
+        children:s?[
+          new Paragraph({children:[new TextRun({text:s.name,size:18,font:'Outfit',color:'1E293B'})],spacing:{after:0}}),
+          new Paragraph({children:[new TextRun({text:`${s.pct}%`,size:16,color:accent6,font:'JetBrains Mono'})],spacing:{after:0}})
+        ]:[new Paragraph({children:[],spacing:{after:0}})],
+        width:{size:50,type:WidthType.PERCENTAGE},
+        borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE}}
+      }));
+      skillRows.push(new TableRow({children:cells}));
+    }
+    if(skillRows.length){
+      children.push(new Table({rows:skillRows,width:{size:100,type:WidthType.PERCENTAGE},borders:{top:{style:BorderStyle.NONE},bottom:{style:BorderStyle.NONE},left:{style:BorderStyle.NONE},right:{style:BorderStyle.NONE},insideH:{style:BorderStyle.NONE},insideV:{style:BorderStyle.NONE}}}));
+      children.push(new Paragraph({spacing:{after:120}}));
+    }
+  }
+
+  // Tools
+  if(secs.tools&&(data.tools||[]).length){
+    children.push(mkLabel(PROFILES[profileId].lbls.tools||'Outils'));
+    children.push(mkPar((data.tools||[]).join('  ·  '),{size:19,color:'475569',after:160}));
+  }
+
+  // Langs
+  if(secs.langs&&(data.langs||[]).length){
+    children.push(mkLabel('Langues'));
+    children.push(mkPar((data.langs||[]).map(l=>`${l.name} (${l.level})`).join('  ·  '),{size:19,color:'475569',after:160}));
+  }
+
+  // Projects
+  if(secs.projs&&(data.projs||[]).length){
+    children.push(mkLabel(PROFILES[profileId].lbls.projCv||'Projets'));
+    (data.projs||[]).forEach(p=>{
+      children.push(new Paragraph({
+        children:[new TextRun({text:p.name||'',size:21,bold:true,color:'1E293B',font:'Outfit'}),new TextRun({text:`   ${p.tag||''}`,size:16,color:accent6,font:'JetBrains Mono'})],
+        spacing:{before:100,after:40}
+      }));
+      if(p.desc)children.push(mkPar(p.desc,{size:19,color:'64748B',after:60}));
+      if(p.url)children.push(mkPar(p.url,{size:17,color:accent6,after:120}));
+    });
+  }
+
+  // Certifications
+  if(secs.certs&&(data.certs||[]).length){
+    children.push(mkLabel('Certifications'));
+    (data.certs||[]).forEach(c=>{
+      children.push(new Paragraph({
+        children:[new TextRun({text:c.title||'',size:21,bold:true,color:'1E293B',font:'Outfit'})],
+        spacing:{before:80,after:30}
+      }));
+      children.push(mkPar(c.org||'',{size:18,color:'64748B',after:80}));
+    });
+  }
+
+  // Education
+  if(secs.edu&&(data.edu||[]).length){
+    children.push(mkLabel('Formation'));
+    (data.edu||[]).forEach(e=>{
+      children.push(new Paragraph({
+        children:[
+          new TextRun({text:e.degree||'',size:21,bold:true,color:'1E293B',font:'Outfit'}),
+          new TextRun({text:`   ${e.year||''}`,size:16,color:'94A3B8',font:'JetBrains Mono'})
+        ],spacing:{before:80,after:30}
+      }));
+      children.push(mkPar(e.school||'',{size:18,color:'64748B',after:80}));
+    });
+  }
+
+  const doc=new Document({
+    creator:'CV Studio v7',
+    title:`CV — ${data.name||'export'}`,
+    styles:{default:{document:{run:{font:'Outfit',size:20,color:'1E293B'}}}},
+    sections:[{properties:{page:{margin:{top:720,right:720,bottom:720,left:720}}},children}]
+  });
+
+  try{
+    const blob=await Packer.toBlob(doc);
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`cv_${(data.name||'export').replace(/\s+/g,'_').toLowerCase()}.docx`;
+    a.click();URL.revokeObjectURL(a.href);
+    showToast('✓ Word (.docx) exporté');
+  }catch(err){
+    console.error(err);
+    showToast('⚠ Erreur export Word: '+err.message);
+  }
+}
 
 /* ════════════════════════════════════════════════════
    ZOOM
@@ -1295,6 +1729,7 @@ function init(){
     if(p._density){cvDensity=p._density;densityMode=p._densityMode||'normal';}
     if(p._cvBg)cvBg=p._cvBg;
     if(p._marginVisible!==undefined)marginVisible=p._marginVisible;
+    if(p._secOrder&&Array.isArray(p._secOrder))sectionOrder=p._secOrder;
   }catch(e){loadDefaults('dev');}}
   else loadDefaults('dev');
   applyTheme(theme,false);
@@ -1607,44 +2042,56 @@ function renderLangs(){
 function addLang(){data.langs.push({name:'Langue',level:'B2'});renderLangs();render();}
 
 function renderExps(){
-  document.querySelectorAll('#exp-list').forEach(el=>{el.innerHTML=(data.exps||[]).map((e,i)=>`
-    <div class="block">
-      <div class="block-hdr"><span class="block-ttl">Exp. ${i+1}</span><button class="del" onclick="data.exps.splice(${i},1);renderExps();render()">×</button></div>
+  document.querySelectorAll('#exp-list').forEach(el=>{
+    el.innerHTML=(data.exps||[]).map((e,i)=>`
+    <div class="block" id="exp-block-${i}" style="position:relative">
+      <div class="block-hdr"><span class="block-ttl">⠿ Exp. ${i+1}</span><button class="del" onclick="data.exps.splice(${i},1);renderExps();render();snapshotUndo()">×</button></div>
       <label>Intitulé</label><input type="text" value="${esc(e.role)}" oninput="data.exps[${i}].role=this.value;render()">
       <label>Entreprise · Lieu</label><input type="text" value="${esc(e.company)}" oninput="data.exps[${i}].company=this.value;render()">
       <label>Période</label><input type="text" value="${esc(e.date)}" oninput="data.exps[${i}].date=this.value;render()">
       <label>Description (Entrée = nouvelle ligne)</label><textarea oninput="data.exps[${i}].desc=this.value;render()" rows="3">${esc(e.desc)}</textarea>
-    </div>`).join('');});}
+    </div>`).join('');
+    el.querySelectorAll('[id^=exp-block-]').forEach((block,i)=>makeDraggable(block,'exps',i));
+  });}
 function addExp(){data.exps.push({role:'Nouveau poste',company:'Entreprise · Lieu',date:'20XX — présent',desc:'Description.'});renderExps();render();}
 
 function renderProjs(){
-  document.querySelectorAll('#proj-list').forEach(el=>{el.innerHTML=(data.projs||[]).map((p,i)=>`
-    <div class="block">
-      <div class="block-hdr"><span class="block-ttl">Projet ${i+1}</span><button class="del" onclick="data.projs.splice(${i},1);renderProjs();render()">×</button></div>
+  document.querySelectorAll('#proj-list').forEach(el=>{
+    el.innerHTML=(data.projs||[]).map((p,i)=>`
+    <div class="block" id="proj-block-${i}" style="position:relative">
+      <div class="block-hdr"><span class="block-ttl">⠿ Projet ${i+1}</span><button class="del" onclick="data.projs.splice(${i},1);renderProjs();render();snapshotUndo()">×</button></div>
       <label>Nom</label><input type="text" value="${esc(p.name)}" oninput="data.projs[${i}].name=this.value;render()">
       <label>Description</label><textarea oninput="data.projs[${i}].desc=this.value;render()" rows="2">${esc(p.desc)}</textarea>
       <label>Stack / Technologies</label><input type="text" value="${esc(p.tag)}" oninput="data.projs[${i}].tag=this.value;render()">
       <label>URL (opt.)</label><input type="url" value="${esc(p.url||'')}" placeholder="https://..." oninput="data.projs[${i}].url=this.value;render()">
-    </div>`).join('');});}
+    </div>`).join('');
+    el.querySelectorAll('[id^=proj-block-]').forEach((block,i)=>makeDraggable(block,'projs',i));
+  });}
 function addProj(){data.projs.push({name:'Projet',desc:'Description.',tag:'Tech',url:''});renderProjs();render();}
 
 function renderCerts(){
-  document.querySelectorAll('#cert-list').forEach(el=>{el.innerHTML=(data.certs||[]).map((c,i)=>`
-    <div class="block" style="padding:7px">
-      <div class="block-hdr"><span class="block-ttl">Cert. ${i+1}</span><button class="del" onclick="data.certs.splice(${i},1);renderCerts();render()">×</button></div>
+  document.querySelectorAll('#cert-list').forEach(el=>{
+    el.innerHTML=(data.certs||[]).map((c,i)=>`
+    <div class="block" id="cert-block-${i}" style="padding:7px;position:relative">
+      <div class="block-hdr"><span class="block-ttl">⠿ Cert. ${i+1}</span><button class="del" onclick="data.certs.splice(${i},1);renderCerts();render();snapshotUndo()">×</button></div>
       <label>Titre</label><input type="text" value="${esc(c.title)}" oninput="data.certs[${i}].title=this.value;render()">
       <label>Organisme · Année</label><input type="text" value="${esc(c.org)}" oninput="data.certs[${i}].org=this.value;render()">
-    </div>`).join('');});}
+    </div>`).join('');
+    el.querySelectorAll('[id^=cert-block-]').forEach((block,i)=>makeDraggable(block,'certs',i));
+  });}
 function addCert(){data.certs.push({title:'Certification',org:'Organisme · 20XX'});renderCerts();render();}
 
 function renderEdu(){
-  document.querySelectorAll('#edu-list').forEach(el=>{el.innerHTML=(data.edu||[]).map((e,i)=>`
-    <div class="block" style="padding:7px">
-      <div class="block-hdr"><span class="block-ttl">Form. ${i+1}</span><button class="del" onclick="data.edu.splice(${i},1);renderEdu();render()">×</button></div>
+  document.querySelectorAll('#edu-list').forEach(el=>{
+    el.innerHTML=(data.edu||[]).map((e,i)=>`
+    <div class="block" id="edu-block-${i}" style="padding:7px;position:relative">
+      <div class="block-hdr"><span class="block-ttl">⠿ Form. ${i+1}</span><button class="del" onclick="data.edu.splice(${i},1);renderEdu();render();snapshotUndo()">×</button></div>
       <label>Diplôme</label><input type="text" value="${esc(e.degree)}" oninput="data.edu[${i}].degree=this.value;render()">
       <label>Établissement</label><input type="text" value="${esc(e.school)}" oninput="data.edu[${i}].school=this.value;render()">
       <label>Année</label><input type="text" value="${esc(e.year)}" oninput="data.edu[${i}].year=this.value;render()">
-    </div>`).join('');});}
+    </div>`).join('');
+    el.querySelectorAll('[id^=edu-block-]').forEach((block,i)=>makeDraggable(block,'edu',i));
+  });}
 function addEdu(){data.edu.push({degree:'Diplôme',school:'Établissement',year:'20XX'});renderEdu();render();}
 
 /* ════════════════════════════════════════════════════
@@ -1687,18 +2134,29 @@ function toggleSec(k){secs[k]=!secs[k];document.querySelectorAll(`[data-k="${k}"
 ════════════════════════════════════════════════════ */
 function buildLayouts(){
   const rail=document.getElementById('layouts-rail');
-  // Group layouts
   const groups={};
   LAYOUTS.forEach(L=>{const g=L.group||'Autre';if(!groups[g])groups[g]=[];groups[g].push(L);});
-  let html='<div class="rail-title">LAYOUTS</div>';
+  const groupNames=Object.keys(groups);
+
+  // Search + filter header
+  let html=`<div class="rail-title">LAYOUTS <span style="color:var(--txt4)">(${LAYOUTS.length})</span></div>
+<div class="rail-search">
+  <input class="rail-search-inp" id="layout-search" placeholder="Rechercher…" oninput="layoutFilter=this.value;filterLayouts()" value="${layoutFilter||''}">
+  <div class="rail-group-filters">
+    ${groupNames.map(g=>`<button class="rail-gf-btn${layoutGroupFilter===g?' on':''}" data-g="${g}" onclick="setLayoutGroupFilter('${g}')">${g}</button>`).join('')}
+  </div>
+</div>`;
+
   Object.entries(groups).forEach(([grp,items])=>{
-    html+=`<div style="font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--txt4);text-transform:uppercase;letter-spacing:.08em;padding:4px 2px 2px;border-top:1px solid var(--border2)">${grp}</div>`;
+    html+=`<div class="rail-group-hdr" data-group="${grp}">${grp}</div>`;
     items.forEach(L=>{
       const svg=LAYOUT_SVGS[L.id]||genDefaultSVG(L.id);
-      html+=`<div class="layout-card${L.id===layout?' on':''}" data-lid="${L.id}" onclick="setLayout('${L.id}')" title="${L.name}">${svg}<div class="layout-lbl">${L.name}</div></div>`;
+      html+=`<div class="layout-card${L.id===layout?' on':''}" data-lid="${L.id}" data-name="${L.name.toLowerCase()}" data-group="${grp}" onclick="setLayout('${L.id}')" title="${L.name}">${svg}<div class="layout-lbl">${L.name}</div></div>`;
     });
   });
   rail.innerHTML=html;
+  // Re-apply filter state
+  if(layoutFilter||layoutGroupFilter)filterLayouts();
 }
 function genDefaultSVG(id){
   // Auto-generate preview SVGs for new layouts based on their style
@@ -1779,12 +2237,15 @@ function render(){
   const certsHTML=(data.certs||[]).map(c=>`<div class="cv-cert"><div class="cv-cert-dot"></div><div><div class="cv-cert-title">${esc(c.title)}</div><div class="cv-cert-org">${esc(c.org)}</div></div></div>`).join('');
   const eduHTML=(data.edu||[]).map(e=>`<div class="cv-edu"><div><div class="cv-edu-degree">${esc(e.degree)}</div><div class="cv-edu-school">${esc(e.school)}</div></div><span class="cv-edu-year">${esc(e.year)}</span></div>`).join('');
 
+  const secMap={
+    exps:()=>sec('exps',L.expCv||getLbl('exp'),expsHTML,hasExps),
+    projs:()=>sec('projs',L.projCv||getLbl('projs'),`<div class="cv-projs">${projsHTML}</div>`,hasProjs),
+    certs:()=>sec('certs',getLbl('certs'),certsHTML,hasCerts),
+    edu:()=>sec('edu',getLbl('edu'),eduHTML,hasEdu),
+  };
   const mainSections=`
     ${hasProfile?sec('profile',L.profileCv||getLbl('profile'),`<p class="cv-profile-txt">${esc(data.profile||'')}</p>`,true):''}
-    ${sec('exps',L.expCv||getLbl('exp'),expsHTML,hasExps)}
-    ${sec('projs',L.projCv||getLbl('projs'),`<div class="cv-projs">${projsHTML}</div>`,hasProjs)}
-    ${sec('certs',getLbl('certs'),certsHTML,hasCerts)}
-    ${sec('edu',getLbl('edu'),eduHTML,hasEdu)}`;
+    ${sectionOrder.map(id=>secMap[id]?secMap[id]():'').join('')}`;
 
   const sbSkills=hasSkills?`<div class="cv-skills-block"><p class="cv-slabel">${L.skills||getLbl('skills')}</p>${skillsHTML}</div>`:'';
   const sbTools=hasTools?`<div class="cv-tags-block"><p class="cv-slabel">${L.tools||getLbl('tools')}</p><div class="cv-tags">${toolsHTML}</div></div>`:'';
@@ -1919,6 +2380,8 @@ function render(){
   save();
   // Snapshot for undo after each meaningful change
   if(undoStack.length>0)snapshotUndo();
+  // Multipage engine — runs after paint
+  requestAnimationFrame(()=>wrapIntoPages(doc));
 }
 
 /* ════════════════════════════════════════════════════
@@ -1926,7 +2389,7 @@ function render(){
 ════════════════════════════════════════════════════ */
 let _saveTimer=null;
 function save(){
-  try{localStorage.setItem('cvs4',JSON.stringify({...data,_pid:profileId,_pal:pal,_layout:layout,_nav:navMode,_step:step,_photo:photo,_secs:secs,_theme:theme,_fontSize:fontSize,_typo:typo,_cvLang:cvLang,_cvZoom:cvZoom,_density:cvDensity,_densityMode:densityMode,_cvBg:cvBg,_marginVisible:marginVisible}));}catch(e){}
+  try{localStorage.setItem('cvs4',JSON.stringify({...data,_pid:profileId,_pal:pal,_layout:layout,_nav:navMode,_step:step,_photo:photo,_secs:secs,_theme:theme,_fontSize:fontSize,_typo:typo,_cvLang:cvLang,_cvZoom:cvZoom,_density:cvDensity,_densityMode:densityMode,_cvBg:cvBg,_marginVisible:marginVisible,_secOrder:sectionOrder}));}catch(e){}
   // Save badge animation
   const badge=document.getElementById('save-badge');
   const dot=badge?.querySelector('.save-dot');
